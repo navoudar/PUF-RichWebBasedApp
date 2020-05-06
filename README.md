@@ -19,7 +19,7 @@ IT No: IT17009546  , Name: Gamage B.G.N.U.
   5.4 click Finish
   
   *** Important ::: when inserting the credit card number please use 12345 as the value, it the only vallidated card in the 
-  system dataase.
+  system database.
   
   Thank you.
           
