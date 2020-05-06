@@ -1,6 +1,7 @@
 package com.model;
 
 import java.sql.Connection;
+
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -52,7 +53,7 @@ public class Payment {
 			}
 
 			// Prepare the html table to be displayed
-			output = "<table border=\"1\"><tr><th>Payment No</th><th>Appointment No</th><th>Payment Date</th><th>Payment Time</th><th>Customer Name</th><th>Card No</th><th>Amount</th></tr>";
+			output = "<table border='1'><tr><th></th><th>Payment No</th><th>Appointment No</th><th>Payment Date</th><th>Payment Time</th><th>Customer Name</th><th>Card No</th><th>Card Type</th><th>Amount</th><th>Update</th><th>Remove</th></tr>";
 
 			String query = "select * from t_payments where t_payment_Status = 'Active'";
 			Statement stmt = con.createStatement();
@@ -60,29 +61,23 @@ public class Payment {
 
 			// iterate through the rows in the result set
 			while (rs.next()) {
-				/*
-				 * String itemID = Integer.toString(rs.getInt("itemID")); String itemCode =
-				 * rs.getString("itemCode"); String itemName = rs.getString("itemName"); String
-				 * itemPrice = Double.toString(rs.getDouble("itemPrice")); String itemDesc =
-				 * rs.getString("itemDesc");
-				 */
+				
 				// Add into the html table
-				output += "<tr><td>" + rs.getString("t_payment_no") + "</td>";
+				output += "<tr><td><input type='hidden'  id='hidPaymentIDUpdate' name='hidPaymentIDUpdate' value='"
+						+ rs.getString("t_payment_no") + "'></td>";
+				output += "<td>" + rs.getString("t_payment_no") + "</td>";
 				output += "<td>" + rs.getString("t_payment_appointment") + "</td>";
 				output += "<td>" + rs.getDate("t_payment_date") + "</td>";
 				output += "<td>" + rs.getTime("t_payment_time") + "</td>";
 				output += "<td>" + rs.getString("t_payment_customerName") + "</td>";
 				output += "<td>" + rs.getInt("t_payment_cardNo") + "</td>";
-				output += "<td>" + rs.getDouble("t_payment_amount") + "</td></tr>";
+				output += "<td>" + rs.getString("t_payment_cardtype") + "</td>";
+				output += "<td>" + rs.getDouble("t_payment_amount") + "</td>";
 
-				/*
-				 * // buttons output +=
-				 * "<td><input name=\"btnUpdate\" type=\"button\" value=\"Update\" class=\"btn btn-secondary\"></td>"
-				 * + "<td><form method=\"post\" action=\"items.jsp\">" +
-				 * "<input name=\"btnRemove\" type=\"submit\" value=\"Remove\" class=\"btn btn-danger\">"
-				 * + "<input name=\"itemID\" type=\"hidden\" value=\"" + itemID + "\">" +
-				 * "</form></td></tr>";
-				 */
+				// buttons
+				output += "<td><input name='btnUpdate' type='button' value='Update' class='btnUpdate btn btn-secondary'></td><td><input name='btnRemove' type='button' value='Remove' class='btnRemove btn btn-danger' data-t_payment_no='"+ rs.getString("t_payment_no") + "'>" 
+						 + "</td></tr>";
+
 			}
 
 			con.close();
@@ -97,7 +92,7 @@ public class Payment {
 		return output;
 
 	}
-
+// this class validate the credit card details
 	public String validateCard(int cardNo) {
 		String output = "";
 		try {
@@ -169,10 +164,10 @@ public class Payment {
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
-
-			output = "success";
+			String newPayment = getAllPayments();
+			output = "{\"status\":\"success\", \"data\": \"" + newPayment + "\"}";
 		} catch (Exception e) {
-			output = "Error";
+			output = "{\"status\":\"error\", \"data\":\"Error while inserting the Payment.\"}";
 			System.err.println(e.getMessage());
 		}
 
@@ -212,9 +207,10 @@ public class Payment {
 			preparedStmt.execute();
 			con.close();
 
-			output = "success";
+			String newPayment = getAllPayments();
+			output = "{\"status\":\"success\", \"data\": \"" +  newPayment + "\"}";
 		} catch (Exception e) {
-			output = "Error";
+			output = "{\"status\":\"error\", \"data\":\"Error while Updating the Payment.\"}";
 			System.err.println(e.getMessage());
 		}
 
@@ -225,15 +221,13 @@ public class Payment {
 		// In this delete function we are only changing the status into delete, not
 		// going to remove the record from databse
 		String output = "";
-
+		
 		try {
 
 			Connection con = connect();
 
 			if (con == null) {
-
 				return "Error while connecting to the database for deleting.";
-
 			}
 
 			String query = "UPDATE t_payments SET t_payment_Status='cancelled' where t_payment_no=?";
@@ -245,14 +239,12 @@ public class Payment {
 			preparedStmt.execute();
 			con.close();
 
-			output = "success";
-
+			String newPayment = getAllPayments();
+			output = "{\"status\":\"success\", \"data\": \"" +  newPayment + "\"}";
 		} catch (Exception e) {
-			output = "Error";
+			output = "{\"status\":\"error\", \"data\":\"Error while Deleting the Payment.\"}";
 			System.err.println(e.getMessage());
-
 		}
-
 		return output;
 
 	}
