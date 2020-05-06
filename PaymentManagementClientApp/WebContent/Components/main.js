@@ -23,9 +23,53 @@ $(document).on("click", "#btnSave", function(event) {
  }
 
 // If valid----------------------- 
- $("#formPayment").submit()
+ var type = ($("#hidPaymentIDSave").val() == "") ? "POST" : "PUT"; 
+ var formUrl = "";
+
+ // Decide API call according to the request type
+ if($("#hidPaymentIDSave").val() == ""){
+	 formUrl = "http://localhost:8080/PaymentManagementMircoServiceS1031.5/PaymentModule/payment/insert";
+ }else{
+	 formUrl = "http://localhost:8080/PaymentManagementMircoServiceS1031.5/PaymentModule/payment/editPayment";
+ }
+
+$.ajax({
+		url : formUrl,
+		type : type,
+		data :  $("#formPayment").serialize(), 
+		dataType : "text",
+		complete : function(response, status) {
+			onItemSaveComplete(response.responseText, status);
+		}
+	});
 }); 
 
+function onItemSaveComplete(response, status) {
+	if (status == "success") {
+			var resultSet = JSON.parse(response);
+
+	if (resultSet.status.trim() == "success") {
+			$("#alertSuccess").text("Successfully saved.");
+			$("#alertSuccess").show();
+
+			$("#divPaymentGrid").html(resultSet.data);
+	} else if (resultSet.status.trim() == "error") {
+			$("#alertError").text(resultSet.data);
+			$("#alertError").show();
+			}
+
+	} else if (status == "error") {
+			$("#alertError").text("Error while saving.");
+			$("#alertError").show();
+	} else {
+			$("#alertError").text(
+						"Unknown error while saving..");
+			$("#alertError").show();
+		}
+
+			$("#hidItemIDSave").val("");
+			$("#formItem")[0].reset();
+	}
 
 function validateItemForm() {
 	  
@@ -62,4 +106,56 @@ function validateItemForm() {
 		} 
 
 	return true;
+}
+
+// UPDATE==========================================
+$(document).on("click",".btnUpdate", function(event) {
+	
+ $("#hidPaymentIDSave").val($(this).closest("tr").find('#hidPaymentIDUpdate').val());
+ $("#t_payment_no").val($(this).closest("tr").find('td:eq(1)').text());
+ $("#t_payment_appointment").val($(this).closest("tr").find('td:eq(2)').text());
+ $("#t_payment_date").val($(this).closest("tr").find('td:eq(3)').text());
+ $("#t_payment_customerName").val($(this).closest("tr").find('td:eq(5)').text());
+ $("#t_payment_cardNo").val($(this).closest("tr").find('td:eq(6)').text());
+ $("#t_payment_cardtype").val($(this).closest("tr").find('td:eq(7)').text());
+ $("#t_payment_amount").val($(this).closest("tr").find('td:eq(8)').text());
+});
+
+
+$(document).on("click", ".btnRemove", function(event) {
+	var id = $("#hidPaymentIDSave").val()
+	
+	$.ajax({
+		url : "http://localhost:8080/PaymentManagementMircoServiceS1031.5/PaymentModule/payment/deletePaymet",
+		type : "DELETE",
+		data : "t_payment_no=" + $(this).data("t_payment_no"),
+		dataType : "text",
+		complete : function(response, status) {
+			onPaymentDeleteComplete(response.responseText, status);
+		}	
+	});
+});
+
+function onPaymentDeleteComplete(response, status) {
+	if (status == "success") {
+
+		var resultSet = JSON.parse(response);
+
+		if (resultSet.status.trim() == "success") {
+			$("#alertSuccess").text("Successfully deleted.");
+			$("#alertSuccess").show();
+
+			$("#divPaymentGrid").html(resultSet.data);
+		} else if (resultSet.status.trim() == "error") {
+			$("#alertError").text(resultSet.data);
+			$("#alertError").show();
+		}
+
+	} else if (status == "error") {
+		$("#alertError").text("Error while deleting.");
+		$("#alertError").show();
+	} else {
+		$("#alertError").text("Unknown error while deleting..");
+		$("#alertError").show();
+	}
 }

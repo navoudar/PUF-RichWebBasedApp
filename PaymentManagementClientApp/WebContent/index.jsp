@@ -1,3 +1,7 @@
+<%@page import="javax.ws.rs.client.*"%>
+<%@page import="java.util.*"%>
+<%@page import="java.text.*"%>
+<%@page import="javax.ws.rs.core.MediaType"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -67,21 +71,28 @@
 						<input type="number" id="t_payment_amount" name="t_payment_amount"
 							min="0">
 					</div>
-
-					<div id="alertSuccess" class="alert alert-success"></div>
-					<div id="alertError" class="alert alert-danger"></div>
-
 					<input type="button" id="btnSave" value="Save" class="btn btn-primary">
 					<input type="hidden" id="hidPaymentIDSave" name="hidPaymentIDSave" value="">
 				</form>
-			</div>
-		</div>
+				
+				<div id="alertSuccess" class="alert alert-success"></div>
+				<div id="alertError" class="alert alert-danger"></div>
+
 		<br>
-		<div class="row">
-			<div class="col-12" id="colStudents"></div>
+		<div id="divPaymentGrid">
+			<%
+		//Create client to communicate with other micro service
+		Client client = ClientBuilder.newClient();
+		//Address to Mirco Service
+		WebTarget targetPaymentReadAll = client.target("http://localhost:8080/PaymentManagementMircoServiceS1031.5/PaymentModule/payment/allPayments");
+
+		//out.print(targetPaymentReadAll.request(MediaType.APPLICATION_JSON).accept(MediaType.TEXT_HTML).post(Entity.json(jString), String.class));
+		String output = targetPaymentReadAll.request().get(String.class);
+		out.print(output);
+%>
 		</div>
 	</div>
-	
-	
+	</div>
+	</div>
 </body>
 </html>
