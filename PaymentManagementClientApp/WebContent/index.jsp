@@ -50,7 +50,7 @@
 						<div class="input-group-prepend">
 							<span class="input-group-text" id="pCardNo" style="width:158px">Card No: </span>
 						</div>
-						<input type="number" id="t_payment_cardNo" name="t_payment_cardNo">
+						<input type="number" id="t_payment_cardNo" name="t_payment_cardNo" placeholder="use 12345">
 					</div>
 					<div class="input-group input-group-sm mb-3">
 						<div class="input-group-prepend">
@@ -86,7 +86,7 @@
 		//Address to Mirco Service
 		WebTarget targetPaymentReadAll = client.target("http://localhost:8080/PaymentManagementMircoServiceS1031.5/PaymentModule/payment/allPayments");
 
-		//out.print(targetPaymentReadAll.request(MediaType.APPLICATION_JSON).accept(MediaType.TEXT_HTML).post(Entity.json(jString), String.class));
+		//print the table
 		String output = targetPaymentReadAll.request().get(String.class);
 		out.print(output);
 %>

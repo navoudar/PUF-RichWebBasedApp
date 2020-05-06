@@ -6,15 +6,15 @@ $(document).ready(function() {
 });
 // SAVE
 $(document).on("click", "#btnSave", function(event) { 
-	// Clear status msges-------------
+	// Clear status message-------------
  $("#alertSuccess").text("");
  $("#alertSuccess").hide();
  $("#alertError").text("");
  $("#alertError").hide();
 
 // Form validation---------------- 
- //var status = validateItemForm();
- var status = true;
+ var status = validateItemForm();
+
 // If not valid------------------- 
  if (status != true) {
  $("#alertError").text(status);
@@ -67,8 +67,9 @@ function onItemSaveComplete(response, status) {
 			$("#alertError").show();
 		}
 
-			$("#hidItemIDSave").val("");
-			$("#formItem")[0].reset();
+			$("#hidPaymentIDSave").val("");
+			$("#formPayment")[0].reset(true);
+			
 	}
 
 function validateItemForm() {
@@ -85,7 +86,7 @@ function validateItemForm() {
 		return "Select Payment Date";  
 		}  
 	 
-	if ($("#t_payment_time").val().trim() == "")  {
+	if ($("#t_payment_time").val() == "")  {
 		return "Select Payment Time.";  
 		}  
 	 
